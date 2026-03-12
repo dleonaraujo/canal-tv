@@ -95,33 +95,66 @@ function renderStreamSection() {
 async function loadStream() {
   try {
     const data = await fetchStream();
-    const label  = document.getElementById("now-label");
-    const title  = document.getElementById("now-title");
-    const desc   = document.getElementById("now-desc");
-    const btn    = document.getElementById("btn-start-stream");
-    const iframe = document.getElementById("live-iframe");
-    const placeholder = document.getElementById("player-placeholder");
+    const title = document.getElementById("now-title");
+    const desc  = document.getElementById("now-desc");
+    const label = document.getElementById("now-label");
+    const btn   = document.getElementById("btn-start-stream");
 
     if (label) label.textContent = "● Ahora en pantalla";
     if (title) title.textContent = data.nowPlaying?.title || "Señal del Canal";
     if (desc)  desc.textContent  = data.nowPlaying?.genre || "";
 
     if (btn) {
-      btn.innerHTML = `<span class="live-dot"></span> ${data.isLive ? "VER EN VIVO" : "STREAM NO CONFIGURADO"}`;
-      btn.onclick = () => {
-        if (data.isLive && data.streamEmbedUrl && iframe && placeholder) {
-          iframe.src = data.streamEmbedUrl;
-          iframe.style.display = "block";
-          placeholder.style.display = "none";
-        } else {
-          alert("Configura STREAM_EMBED_URL en las variables de entorno de Vercel.");
-        }
-      };
+      btn.innerHTML = `<span class="live-dot"></span> VER EN VIVO`;
+      btn.onclick = () => startHLS(data.streamEmbedUrl);
     }
   } catch (e) {
-    console.warn("Stream API error:", e);
+    console.warn("Stream error:", e);
   }
 }
+
+function startHLS(url) {
+  if (!url) {
+    alert("Configura STREAM_EMBED_URL en las variables de entorno.");
+    return;
+  }
+
+  const placeholder = document.getElementById("player-placeholder");
+  const frame       = placeholder.parentElement;
+
+  // Crear elemento <video> con HLS.js
+  const video = document.createElement("video");
+  video.style.cssText = "position:absolute;inset:0;width:100%;height:100%;background:#000";
+  video.controls = true;
+  video.autoplay = true;
+
+  frame.appendChild(video);
+  placeholder.style.display = "none";
+
+  // Cargar HLS.js dinámicamente
+  const script = document.createElement("script");
+  script.src = "https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js";
+  script.onload = () => {
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Safari soporta HLS nativo
+      video.src = url;
+    } else {
+      alert("Tu navegador no soporta HLS.");
+    }
+  };
+  document.head.appendChild(script);
+}
+```
+
+---
+
+Luego en **Vercel → Settings → Environment Variables** agrega:
+```
+STREAM_EMBED_URL = https://TU_URL/stream.m3u8
 
 // ─── SECTION: PROGRAMACIÓN ───────────────────────────────────────────────────
 const DAYS = [
