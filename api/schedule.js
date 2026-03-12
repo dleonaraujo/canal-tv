@@ -4,7 +4,9 @@
 
 const schedule = {
   lun: [
-    { time: "06:00", name: "Buenos Días Perú",       genre: "Magazine",             color: "#1a4aff", tag: "live" },
+    { time: "06:00", name: "Barney y sus amigos",       genre: "Infantil",             color: "#1a4aff", tag: "live" },
+    { time: "06:30", name: "Word World",       genre: "Infantil",             color: "#1a4aff", tag: "live" },
+    
     { time: "08:00", name: "Informe Económico",       genre: "Noticias · 30 min",   color: "#ff8c00", tag: ""     },
     { time: "09:00", name: "Ciencia & Tecnología",    genre: "Documental · 60 min", color: "#00b4d8", tag: "new"  },
     { time: "10:00", name: "Señal Educativa",         genre: "Educación · 90 min",  color: "#2ecc71", tag: ""     },
