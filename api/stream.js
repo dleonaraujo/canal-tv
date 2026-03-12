@@ -10,10 +10,7 @@ export default function handler(req, res) {
   if (req.method !== "GET")
     return res.status(405).json({ error: "Method not allowed" });
 
-  // ─── CONFIGURA AQUÍ TU STREAM ───────────────────────────────────────────
-  // Para YouTube Live: https://www.youtube.com/embed/LIVE_VIDEO_ID?autoplay=1
-  // Para Vimeo Live:   https://player.vimeo.com/video/VIDEO_ID?autoplay=1
-  // ────────────────────────────────────────────────────────────────────────
+ 
   const streamEmbedUrl = process.env.STREAM_EMBED_URL || "";
 
   // Current hour-based "now playing" (static demo)
